@@ -11,7 +11,7 @@ api_port="4440"
 working_location="/home/rundeck/jobs/rundeck-jobs"
 
 #set repo and branch
-repository="git repo to sync from"
+repository="repo here"
 relative_repository="origin"
 repository_branch="master"
 
@@ -39,17 +39,17 @@ function job_import() {
 
 	cd $working_location
 
-	yaml_jobs=( $(find /home/rundeck/jobs/rundeck-jobs/ -name "*.yml") )
-	xml_jobs=( $(find /home/rundeck/jobs/rundeck-jobs/ -name "*.xml") )
+	yaml_jobs=( $(find $working_location/ -name "*.yml") )
+	xml_jobs=( $(find $working_location/ -name "*.xml") )
 
 	if [ ${#yaml_jobs[@]} -gt 0 ]; then
-		for i in /home/rundeck/jobs/rundeck-jobs/*.yml; do
+		for i in $working_location/*.yml; do
 			rd-jobs load -p $PROJECT --file "$i" -d update -F yaml
 		done;
 	fi
 
 	if [ ${#xml_jobs[@]} -gt 0 ]; then
-		for i in /home/rundeck/jobs/rundeck-jobs/*.xml; do
+		for i in $working_location/*.xml; do
 			rd-jobs load -p $PROJECT --file "$i" -d update -F xml
 		done;
 	fi
@@ -61,8 +61,8 @@ function job_remove() {
 
 	cd $working_location
 
-	yaml_jobs=( $(find /home/rundeck/jobs/rundeck-jobs/ -name "*.yml") )
-	xml_jobs=( $(find /home/rundeck/jobs/rundeck-jobs/ -name "*.xml") )
+	yaml_jobs=( $(find $working_location/ -name "*.yml") )
+	xml_jobs=( $(find $working_location/ -name "*.xml") )
 
 	if [[ $repository_branch == "Dev" ]]; then
 		localjobs=( $(curl -v -k -H "X-Rundeck-Auth-Token: $admin_api_key" -X GET https://$api_endpoint:$api_port/api/17/project/$PROJECT/jobs/export?format=yaml | sed -n -e 's/^.*uuid: //p') )
